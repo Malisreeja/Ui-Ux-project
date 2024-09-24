@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Carousel with Fullscreen</title>
+  <style>
+    /* Basic styling for carousel */
+    .carousel-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+      border: 1px solid #ccc;
+    }
+    .carousel {
+      display: flex;
+      align-items: center;
+      transition: transform 0.3s ease-in-out;
+    }
+    .carousel img {
+      width: 150px;
+      height: 150px;
+      margin: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 999;
+    }
+    .fullscreen img {
+      width: auto;
+      height: 90vh;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      color: white;
+      font-size: 2em;
+      cursor: pointer;
+    }
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(255, 255, 255, 0.7);
+      border: none;
+      font-size: 2em;
+      cursor: pointer;
+      z-index: 1;
+    }
+    .prev-btn {
+      left: 10px;
+    }
+    .next-btn {
+      right: 10px;
+    }
+    button {
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Carousel container -->
+  <div class="carousel-container">
+    <div class="carousel"></div>
+    <button class="carousel-btn prev-btn" id="prev-btn">‹</button>
+    <button class="carousel-btn next-btn" id="next-btn">›</button>
+  </div>
+
+  <!-- Image buttons to add images to the carousel -->
+  <div class="buttons">
+    <button onclick="addImage('https://via.placeholder.com/150/FF0000/FFFFFF?text=Image1')">Add  1</button>
+    <button onclick="addImage('https://via.placeholder.com/150/00FF00/FFFFFF?text=Image2')">Add Image 2</button>
+    <button onclick="addImage('https://via.placeholder.com/150/0000FF/FFFFFF?text=Image3')">Add Image 3</button>
+    <button onclick="addImage('https://via.placeholder.com/150/FFFF00/FFFFFF?text=Image4')">Add Image 4</button>
+  </div>
+</div>
+
+<script>
+  let carouselImages = [];
+  let currentIndex = 0;
+  const carousel = document.querySelector('.carousel');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+
+  // Function to add an image to the carousel
+  function addImage(imgSrc) {
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.alt = "Carousel Image";
+    img.onclick = () => showFullscreen(imgSrc);
+    carouselImages.push(img);
+    carousel.appendChild(img);
+    updateCarousel();
+  }
+
+  // Update carousel display and buttons
+  function updateCarousel() {
+    if (carouselImages.length > 3) {
+      prevBtn.style.display = 'block';
+      nextBtn.style.display = 'block';
+    } else {
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+    }
+  }
+
+  // Move the carousel left or right
+  function slideCarousel(direction) {
+    if (direction === 'next' && currentIndex < carouselImages.length - 3) {
+      currentIndex++;
+    } else if (direction === 'prev' && currentIndex > 0) {
+      currentIndex--;
+    }
+    carousel.style.transform = `translateX(-${currentIndex * 160}px)`; // Adjust based on image width
+  }
+
+  // Attach event listeners to prev and next buttons
+  prevBtn.onclick = () => slideCarousel('prev');
+  nextBtn.onclick = () => slideCarousel('next');
+
+  // Function to show image in fullscreen
+  function showFullscreen(imgSrc) {
+    const fullscreenDiv = document.createElement('div');
+    fullscreenDiv.classList.add('fullscreen');
+
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    fullscreenDiv.appendChild(img);
+
+    const closeBtn = document.createElement('span');
+    closeBtn.classList.add('close-btn');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.onclick = () => {
+      document.body.removeChild(fullscreenDiv);
+    };
+
+    fullscreenDiv.appendChild(closeBtn);
+    document.body.appendChild(fullscreenDiv);
+  }
+</script>
+
+</body>
+</html>
